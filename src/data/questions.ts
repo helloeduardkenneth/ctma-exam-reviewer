@@ -1,4 +1,5 @@
-import type { Question } from "../types";
+import type { ExamVariant, Question } from "../types";
+import { europeQuestions } from "./europeQuestions";
 
 export const questions = [
   {
@@ -842,3 +843,15 @@ export const questions = [
     explanation: "FATF provides international standards and evaluation. National laws, regulators, and financial intelligence units establish the operational duties for institutions in each jurisdiction.",
   },
 ] as const satisfies readonly Question[];
+
+export { europeQuestions };
+export const globalQuestions = questions;
+export const questionsByVariant: Record<ExamVariant, readonly Question[]> = {
+  global: globalQuestions,
+  europe: europeQuestions,
+};
+export const allQuestions: readonly Question[] = [
+  ...globalQuestions,
+  ...europeQuestions,
+];
+

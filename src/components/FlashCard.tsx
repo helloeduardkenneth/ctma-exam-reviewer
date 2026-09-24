@@ -38,141 +38,160 @@ export function FlashCard({
   const isCorrect = selectedIndex === question.correctIndex;
 
   return (
-    <div className="card-perspective">
+    <div className="perspective-card">
       <motion.article
-        className="card-stage relative min-h-[610px] w-full sm:min-h-[560px]"
+        className="preserve-3d grid w-full will-change-transform"
         animate={
           reduceMotion
-            ? { opacity: revealed ? 0.985 : 1 }
-            : { rotateY: revealed ? 180 : 0 }
+            ? { opacity: revealed ? 0.99 : 1 }
+            : { transform: revealed ? "rotateY(180deg)" : "rotateY(0deg)" }
         }
         transition={
           reduceMotion
-            ? { duration: 0.12 }
-            : { duration: 0.62, ease: [0.16, 1, 0.3, 1] }
+            ? { duration: 0.1 }
+            : { duration: 0.38, ease: [0.23, 1, 0.32, 1] }
         }
       >
         <section
-          className={`card-face absolute inset-0 flex flex-col rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,41,51,0.10)] sm:p-8 ${
-            reduceMotion && revealed ? "invisible" : ""
-          }`}
+          className={`backface-hidden row-start-1 col-start-1 flex min-h-[590px] flex-col rounded-2xl border border-line/70 bg-paper-raised p-5 shadow-[0_22px_54px_rgb(19_39_42/0.12)] sm:p-8 lg:p-10 ${reduceMotion && revealed ? "invisible" : ""}`}
           aria-hidden={revealed}
         >
-          <div className="mb-5 flex flex-wrap items-center gap-2 text-xs font-semibold text-teal-800">
-            <span className="rounded-full bg-teal-50 px-3 py-1.5">{question.topic}</span>
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <span className="max-w-[min(78%,32rem)] truncate text-[0.73rem] font-bold leading-tight text-accent-deep">
+              {question.topic}
+            </span>
+            <span className="text-xs font-semibold text-muted">Choose one</span>
           </div>
 
           <h2
             ref={questionHeadingRef}
             tabIndex={-1}
-            className="text-balance text-xl font-semibold leading-snug tracking-[-0.02em] text-slate-950 outline-none sm:text-2xl"
+            className="max-w-[34ch] text-balance text-[1.45rem] font-semibold leading-[1.35] tracking-[-0.025em] text-ink outline-none sm:text-[1.8rem]"
           >
             {question.question}
           </h2>
 
-          <div
-            className="mt-6 grid gap-3"
-            role="radiogroup"
-            aria-label="Answer choices"
-          >
+          <div className="mt-8 grid gap-3" role="radiogroup" aria-label="Answer choices">
             {question.choices.map((choice, index) => {
               const selected = selectedIndex === index;
-
+              const isLocked = selectedIndex !== null && !selected;
               return (
-                <button
+                <label
                   key={choice}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  disabled={selectedIndex !== null}
-                  tabIndex={revealed ? -1 : 0}
-                  onClick={() => onSelect(index)}
-                  className={`group flex min-h-14 items-start gap-3 rounded-2xl border p-3.5 text-left text-sm leading-relaxed outline-none transition active:scale-[0.99] motion-reduce:transition-none sm:text-base ${
+                  className={`flex min-h-[4.5rem] items-center gap-3.5 sm:gap-4 rounded-xl border p-4 sm:px-4.5 sm:py-3.5 text-base font-medium leading-relaxed transition-all duration-150 max-sm:min-h-[4.2rem] max-sm:p-3.5 ${
                     selected
-                      ? "border-teal-700 bg-teal-50 text-slate-950 ring-2 ring-teal-700/10"
-                      : "border-slate-200 bg-slate-50/60 text-slate-700 hover:border-slate-400 hover:bg-white focus-visible:border-teal-700 focus-visible:ring-4 focus-visible:ring-teal-700/10 disabled:cursor-default disabled:hover:border-slate-200 disabled:hover:bg-slate-50/60"
-                  }`}
+                      ? "border-accent bg-accent-soft text-ink shadow-[0_5px_16px_rgb(31_107_98/0.12)]"
+                      : isLocked
+                        ? "cursor-default border-line-strong bg-[#faf8f2] text-[#697875] opacity-70"
+                        : "cursor-pointer border-line-strong bg-[#faf8f2] text-body hover:-translate-y-px hover:border-accent hover:bg-paper-raised hover:shadow-[0_7px_18px_rgb(19_39_42/0.08)] active:scale-[0.98]"
+                  } has-[:focus-visible]:border-accent has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-focus`}
                 >
+                  <input
+                    type="radio"
+                    name={`question-${question.id}`}
+                    value={index}
+                    checked={selected}
+                    disabled={selectedIndex !== null || revealed}
+                    onChange={() => onSelect(index)}
+                    className="peer sr-only"
+                  />
                   <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-xs font-bold ${
+                    aria-hidden="true"
+                    className={`grid h-[2.15rem] w-[2.15rem] shrink-0 place-items-center rounded-[0.6rem] border text-xs font-bold transition-colors ${
                       selected
-                        ? "border-teal-700 bg-teal-700 text-white"
-                        : "border-slate-300 bg-white text-slate-600 group-hover:border-slate-400"
+                        ? "border-accent bg-accent text-white"
+                        : "border-line-strong bg-paper-raised text-muted"
                     }`}
                   >
                     {CHOICE_LABELS[index]}
                   </span>
-                  <span className="pt-0.5">{choice}</span>
-                </button>
+                  <span className="min-w-0 pt-0.5">{choice}</span>
+                  {selected && (
+                    <span className="ml-auto text-[0.68rem] font-bold uppercase tracking-wider text-accent-deep max-sm:hidden">
+                      Selected
+                    </span>
+                  )}
+                </label>
               );
             })}
           </div>
 
-          <div className="mt-auto pt-6">
-            <button
-              type="button"
-              onClick={onReveal}
-              disabled={selectedIndex === null}
-              tabIndex={revealed ? -1 : 0}
-              className="min-h-12 w-full rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-700/25 active:translate-y-px disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 motion-reduce:transition-none"
-            >
-              {selectedIndex === null ? "Choose an answer to continue" : "Reveal answer"}
-            </button>
+          <div className="mt-auto pt-7" aria-live="polite">
+            {selectedIndex === null ? (
+              <div className="flex min-h-[3.5rem] items-center gap-3 border-t border-line pt-4 text-[0.78rem] leading-relaxed text-muted">
+                <span
+                  aria-hidden="true"
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-accent-soft text-xs font-bold text-accent-deep"
+                >
+                  ?
+                </span>
+                <p>
+                  <strong className="font-semibold text-body">Select one response.</strong> You will review the correct answer and explanation next.
+                </p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onReveal}
+                tabIndex={revealed ? -1 : 0}
+                className="flex min-h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-ink bg-ink px-5 py-3 font-semibold text-white transition-all duration-150 hover:bg-[#244044] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus"
+              >
+                <span>Review answer</span>
+                <span aria-hidden="true">&rarr;</span>
+              </button>
+            )}
           </div>
         </section>
 
         <section
-          className={`card-face card-back absolute inset-0 flex flex-col rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,41,51,0.10)] sm:p-8 ${
-            reduceMotion && !revealed ? "invisible" : ""
-          }`}
+          className={`backface-hidden rotate-y-180 row-start-1 col-start-1 flex min-h-[590px] flex-col rounded-2xl border border-line/70 bg-paper-raised p-5 shadow-[0_22px_54px_rgb(19_39_42/0.12)] sm:p-8 lg:p-10 ${reduceMotion && !revealed ? "invisible" : ""}`}
           style={reduceMotion ? { transform: "none" } : undefined}
           aria-hidden={!revealed}
         >
           <div
-            className={`mb-5 inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
-              isCorrect ? "bg-teal-50 text-teal-800" : "bg-rose-50 text-rose-800"
+            className={`inline-flex w-fit items-center gap-2 text-xs font-extrabold ${
+              isCorrect ? "text-accent-deep" : "text-review"
             }`}
           >
-            {isCorrect ? "Correct" : "Review this one"}
+            <span
+              className={`grid h-7 w-7 place-items-center rounded-full text-[0.62rem] font-bold tracking-tight ${
+                isCorrect ? "bg-accent-soft" : "bg-review-soft"
+              }`}
+              aria-hidden="true"
+            >
+              {isCorrect ? "OK" : "!"}
+            </span>
+            <span>{isCorrect ? "Correct answer" : "Worth another look"}</span>
           </div>
 
           <h2
             ref={answerHeadingRef}
             tabIndex={-1}
-            className="text-xl font-semibold tracking-[-0.02em] text-slate-950 outline-none sm:text-2xl"
+            className="mt-6 text-[1.45rem] font-semibold tracking-[-0.025em] text-ink outline-none sm:text-[1.75rem]"
           >
-            Answer and explanation
+            {CHOICE_LABELS[question.correctIndex]}. {question.choices[question.correctIndex]}
           </h2>
 
-          <dl className="mt-6 space-y-5">
-            <div>
-              <dt className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Correct answer</dt>
-              <dd className="mt-2 text-base font-semibold leading-relaxed text-teal-800">
-                {CHOICE_LABELS[question.correctIndex]}. {question.choices[question.correctIndex]}
-              </dd>
-            </div>
-            {!isCorrect && selectedIndex !== null && (
-              <div>
-                <dt className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Your answer</dt>
-                <dd className="mt-2 text-base leading-relaxed text-slate-700">
-                  {CHOICE_LABELS[selectedIndex]}. {question.choices[selectedIndex]}
-                </dd>
-              </div>
-            )}
-            <div className="border-t border-slate-200 pt-5">
-              <dt className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Why it matters</dt>
-              <dd className="mt-2 text-base leading-relaxed text-slate-700">{question.explanation}</dd>
-            </div>
-          </dl>
+          {!isCorrect && selectedIndex !== null && (
+            <p className="mt-4 text-sm leading-6 text-muted">
+              You chose <span className="font-semibold text-body">{CHOICE_LABELS[selectedIndex]}. {question.choices[selectedIndex]}</span>
+            </p>
+          )}
 
-          <div className="mt-auto pt-6">
+          <div className="mt-7 border-t border-line pt-6">
+            <p className="text-xs font-bold uppercase tracking-wider text-accent">Explanation</p>
+            <p className="mt-3 max-w-[68ch] text-base leading-7 text-body">{question.explanation}</p>
+          </div>
+
+          <div className="mt-auto pt-8">
             <button
               type="button"
               onClick={onNext}
               tabIndex={revealed ? 0 : -1}
-              className="min-h-12 w-full rounded-2xl bg-teal-700 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-700/25 active:translate-y-px motion-reduce:transition-none"
+              className="flex min-h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-accent bg-accent px-5 py-3 font-semibold text-white shadow-[0_6px_16px_rgb(31_107_98/0.17)] transition-all duration-150 hover:border-accent-deep hover:bg-accent-deep active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus"
             >
-              {isLast ? "View results" : "Next question"}
+              <span>{isLast ? "View results" : "Continue"}</span>
+              <span aria-hidden="true">&rarr;</span>
             </button>
           </div>
         </section>

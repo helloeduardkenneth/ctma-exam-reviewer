@@ -1,10 +1,12 @@
+export type ExamVariant = "global" | "europe";
+
 export type Domain =
   | "Role of Transaction Monitoring in Financial Crime Prevention"
   | "Transaction Monitoring Alert Generation"
   | "Alert Investigation"
   | "Outcomes of Transaction Monitoring Investigations";
 
-export type Topic =
+export type GlobalTopic =
   | "Transaction Monitoring Fundamentals"
   | "AML/BSA Compliance"
   | "Alert Investigation & Disposition"
@@ -14,8 +16,21 @@ export type Topic =
   | "Financial Crime Typologies"
   | "Regulatory Frameworks";
 
+export type EuropeTopic =
+  | "Transaction Monitoring Fundamentals"
+  | "AML/EU Directive Compliance"
+  | "Alert Investigation & Disposition"
+  | "STR Filing"
+  | "Risk-Based Approach"
+  | "KYC/CDD"
+  | "Financial Crime Typologies"
+  | "Regulatory Frameworks";
+
+export type Topic = GlobalTopic | EuropeTopic;
+
 export interface Question {
   id: number;
+  variant?: ExamVariant;
   domain: Domain;
   topic: Topic;
   question: string;

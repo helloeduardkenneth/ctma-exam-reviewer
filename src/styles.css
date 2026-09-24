@@ -1,62 +1,74 @@
 @import "tailwindcss";
 
-:root {
-  color: #0f2630;
-  background: #f3f7f6;
-  font-family: Aptos, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+@theme {
+  --color-paper: #f5f2eb;
+  --color-paper-raised: #fffdf8;
+  --color-ink: #13272a;
+  --color-body: #344c4f;
+  --color-muted: #5f7072;
+  --color-line: #dcded7;
+  --color-line-strong: #c7cec8;
+  --color-accent: #1f6b62;
+  --color-accent-deep: #17564f;
+  --color-accent-soft: #e3efeb;
+  --color-review: #9a4e3f;
+  --color-review-soft: #f6e9e5;
+  --color-hero: #103f3b;
+  --color-hero-deep: #0b302e;
+  --color-hero-ink: #fff8e9;
+  --color-hero-body: #d9ebe5;
+  --color-hero-muted: #b7d2cb;
+  --color-focus: rgb(31 107 98 / 20%);
+  --font-sans: "Poppins", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --ease-out-cubic: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  html {
+    min-width: 320px;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    color: #ffffff;
+    background-color: var(--color-accent);
+  }
+
+  button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  label {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-html {
-  min-width: 320px;
-  background: #f3f7f6;
+@utility perspective-card {
+  perspective: 1800px;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100dvh;
-}
-
-button,
-select {
-  font: inherit;
-}
-
-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.text-balance {
-  text-wrap: balance;
-}
-
-.card-perspective {
-  perspective: 1600px;
-}
-
-.card-stage {
+@utility preserve-3d {
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
-.card-face {
+@utility backface-hidden {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-.card-back {
+@utility rotate-y-180 {
   transform: rotateY(180deg);
-}
-
-::selection {
-  color: #f8fafc;
-  background: #0f766e;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -69,7 +81,7 @@ button {
     transition-duration: 0.01ms !important;
   }
 
-  .card-stage {
+  .preserve-3d {
     transform-style: flat;
     will-change: auto;
   }

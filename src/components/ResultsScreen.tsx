@@ -29,45 +29,55 @@ export function ResultsScreen({
   return (
     <motion.main
       id="main-content"
-      initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
-      transition={{ duration: reduceMotion ? 0.1 : 0.42, ease: [0.16, 1, 0.3, 1] }}
-      className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12"
+      initial={reduceMotion ? false : { opacity: 0, transform: "translateY(8px)" }}
+      animate={{ opacity: 1, transform: "translateY(0)" }}
+      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, transform: "translateY(-5px)" }}
+      transition={{ duration: reduceMotion ? 0.1 : 0.22, ease: [0.23, 1, 0.32, 1] }}
+      className="mx-auto w-full max-w-[920px] px-4 py-8 sm:px-6 sm:py-14"
     >
-      <section className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,41,51,0.08)] sm:p-9">
-        <p className="text-sm font-semibold text-teal-800">Session complete</p>
-        <div className="mt-3 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <section className="rounded-2xl border border-line/70 bg-paper-raised p-6 shadow-[0_18px_48px_rgb(19_39_42/0.06)] sm:p-8">
+        <div className="grid gap-8 border-b border-line pb-8 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
-            <h1 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
-              {score.passed ? "Practice target reached" : "Keep building your recall"}
+            <p className="text-xs font-bold uppercase tracking-wider text-accent">Session complete</p>
+            <h1 className="mt-4 max-w-xl text-balance text-3xl font-semibold leading-tight tracking-[-0.035em] text-ink sm:text-[2.65rem]">
+              {score.passed ? "You reached the practice target." : "A useful baseline. Keep going."}
             </h1>
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-600">
+            <p className="mt-4 max-w-[60ch] text-base leading-7 text-body">
               {score.passed
-                ? "You met the 74% CTMA practice threshold for this session."
-                : "Review the weaker areas below, then try another focused session."}
+                ? "You met the 74% practice threshold. Use the breakdown to decide what deserves another pass."
+                : "Review the lower-scoring areas below, then try a shorter focused session."}
             </p>
           </div>
-          <div className="shrink-0 sm:text-right">
-            <p className="text-6xl font-semibold tracking-[-0.07em] text-slate-950">{score.percentage}%</p>
-            <p className="mt-1 text-sm font-medium text-slate-500">
+          <div className="min-w-[9rem] border-l border-line pl-6 max-sm:border-l-0 max-sm:border-t max-sm:pl-0 max-sm:pt-6">
+            <p className="text-[4.5rem] font-semibold leading-none tracking-[-0.06em] text-ink sm:text-[5.5rem]">
+              {score.percentage}<span className="text-[0.38em] tracking-normal text-muted">%</span>
+            </p>
+            <p className="mt-2 text-sm font-medium tabular-nums text-muted">
               {score.correct} of {score.total} correct
+            </p>
+            <p className={`mt-3 text-xs font-bold ${score.passed ? "text-accent" : "text-review"}`}>
+              {score.passed ? "Target met" : "Target: 74%"}
             </p>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-slate-200 pt-7">
+        <div className="pt-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-semibold text-slate-950">Performance breakdown</h2>
-            <div className="inline-flex w-fit rounded-2xl bg-slate-100 p-1" aria-label="Breakdown view">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-ink">Where to focus next</h2>
+              <p className="mt-1 text-sm text-muted">Compare performance across this session.</p>
+            </div>
+            <div className="inline-flex rounded-xl border border-line bg-[#eeece6] p-1" aria-label="Breakdown view">
               {(["domain", "topic"] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setMode(value)}
                   aria-pressed={mode === value}
-                  className={`rounded-xl px-3.5 py-2 text-sm font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-teal-700 ${
-                    mode === value ? "bg-white text-slate-950 shadow-sm" : "text-slate-600 hover:text-slate-950"
+                  className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold outline-none transition-all focus-visible:ring-3 focus-visible:ring-focus ${
+                    mode === value
+                      ? "bg-paper-raised text-ink shadow-[0_1px_4px_rgb(19_39_42/0.1)]"
+                      : "text-muted hover:text-ink"
                   }`}
                 >
                   By {value}
@@ -76,19 +86,19 @@ export function ResultsScreen({
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3">
+          <div className="mt-6 divide-y divide-line border-y border-line">
             {rows.map((row) => (
-              <div
-                key={row.label}
-                className="grid gap-2 rounded-2xl bg-slate-50 p-4 sm:grid-cols-[1fr_auto] sm:items-center"
-              >
+              <div key={row.label} className="grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_140px_52px] sm:items-center sm:gap-5">
                 <div>
-                  <p className="font-semibold leading-snug text-slate-800">{row.label}</p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {row.correct} correct, {row.incorrect} incorrect
+                  <p className="font-semibold leading-snug text-ink">{row.label}</p>
+                  <p className="mt-1 text-xs tabular-nums text-muted">
+                    {row.correct} correct / {row.incorrect} incorrect
                   </p>
                 </div>
-                <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{row.percentage}%</p>
+                <div className="h-1.5 overflow-hidden rounded-full bg-line-strong" aria-hidden="true">
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${row.percentage}%` }} />
+                </div>
+                <p className="text-right text-lg font-bold tabular-nums text-ink">{row.percentage}%</p>
               </div>
             ))}
           </div>
@@ -98,20 +108,20 @@ export function ResultsScreen({
           <button
             type="button"
             onClick={onRetry}
-            className="min-h-12 rounded-2xl bg-teal-700 px-5 py-3 font-semibold text-white transition hover:bg-teal-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-700/25 active:translate-y-px"
+            className="flex min-h-12 cursor-pointer items-center justify-center gap-3 rounded-xl border border-accent bg-accent px-5 py-3 font-semibold text-white shadow-[0_6px_16px_rgb(31_107_98/0.17)] transition-all duration-150 hover:border-accent-deep hover:bg-accent-deep active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus"
           >
-            Retry this focus
+            <span>Retry this focus</span><span aria-hidden="true">&rarr;</span>
           </button>
           <button
             type="button"
             onClick={onNewSession}
-            className="min-h-12 rounded-2xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-teal-700/20 active:translate-y-px"
+            className="flex min-h-12 cursor-pointer items-center justify-center gap-3 rounded-xl border border-line-strong bg-transparent px-5 py-3 font-semibold text-ink transition-all duration-150 hover:border-[#9daaa5] hover:bg-paper-raised/70 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus"
           >
             Choose a new focus
           </button>
         </div>
 
-        <p className="mt-6 text-xs leading-relaxed text-slate-500">
+        <p className="mt-6 text-xs leading-5 text-muted">
           This score is a study estimate, not an official ACAMS result. The published CTMA passing standard is 74% of scored questions.
         </p>
       </section>
